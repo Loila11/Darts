@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
 
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
+
 
 def task3(path):
     pass
@@ -53,7 +56,7 @@ def getEllipses():
 
     # Find contours
     cnts, hier = cv2.findContours(gray, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
-    cnts = [cnts[i] for i in range(len(cnts)) if 200 < len(cnts[i]) < 10000]
+    cnts = [polygon for polygon in cnts if 200 < len(polygon) < 10000]
 
     # Draw found contours in input image
     image = cv2.drawContours(image, cnts, -1, (0, 0, 255), 2)
@@ -63,7 +66,19 @@ def getEllipses():
     out_image = cv2.resize(image, dsize=(0, 0), fx=0.25, fy=0.25)
     cv2.imwrite('test_ellipses.png', out_image)
 
-    return cnts
+    polygons = [Polygon([(point[0], point[1]) for [point] in polygon]) for polygon in cnts]
+    for i in [1, 3, 5, 7]:
+        polygons[i], polygons[i + 1] = polygons[i + 1], polygons[i]
+
+    return polygons
+
+
+def getPointScore(polygons, x, y):
+    point = Point(x, y)
+    for i in range(9, -1, -1):
+        if polygons[i].contains(point):
+            return 10 - i
+    return 0
 
 
 def diffOpenCV(path, image_name):
@@ -90,7 +105,7 @@ def diffOpenCV(path, image_name):
 
 def task1(path):
     # getClearImage()
-    areas = getEllipses()
+    polygons = getEllipses()
     path += '/Task1/'
 
     for i in range(1, 2):
