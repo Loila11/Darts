@@ -178,7 +178,7 @@ def countDarts(path):
                 best_squares += [((x, y), (x + size, y + size), score)]
 
     best_best_squares = getDartsAreas(best_squares)
-    print(best_best_squares)
+    # print(best_best_squares)
 
     # for square in best_best_squares:
     #     drawRectangle(mask, square[0], square[1])
@@ -226,12 +226,16 @@ def task1(path):
     polygons = getEllipses()
     path += '/Task1/'
 
-    for i in range(1, 2):
-        image_name = path
+    for i in range(1, 26):
+        image_name = ''
         if i < 10:
             image_name += '0'
-        image_name += str(i) + '.jpg'
+        image_name += str(i)
 
-        countDarts(image_name)
+        dartsNo = countDarts(path + image_name + '.jpg')
+        f = open('evaluation/Task1/' + image_name + '_predicted.txt', 'w')
+        f.write(str(dartsNo))
+        f.close()
+
         # template_matching(image_name)
         # getDiff(image_name)
