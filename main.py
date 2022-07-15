@@ -1,16 +1,11 @@
 from task1 import task1
-
-
-def task3(path):
-    pass
-
-
-def task2(path):
-    pass
+from task2 import task2
 
 
 def main(path):
     task1(path)
+    task2(path)
+    # task3(path)
 
 
 main('train')
