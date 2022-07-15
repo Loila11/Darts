@@ -23,13 +23,12 @@ def task2(path):
 
         diff = cv2.absdiff(image, clearImage)
         mask = toHSV(diff)
-        dartsNo = countDarts(mask, 20)
 
-        # dartsNo = countDarts(path + image_name + '.jpg', clearImage)
+        dartsNo = countDarts(mask, 20)
         if dartsNo != outputs[i - 1]:
             print(i, dartsNo, outputs[i - 1])
 
-        # f = open('evaluation/Task1/' + image_name + '_predicted.txt', 'w')
+        # f = open('evaluation/Task2/' + image_name + '_predicted.txt', 'w')
         # f.write(str(dartsNo))
         # f.close()
 

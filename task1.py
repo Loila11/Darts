@@ -139,7 +139,7 @@ def task1(path):
     # getClearImage('auxiliary_images/template_task1.jpg', 'auxiliary_images/gray_removed_noise.png')
     polygons = getEllipses()
     path += '/Task1/'
-    # outputs = [3, 2, 3, 2, 1, 2, 1, 1, 2, 2, 3, 1, 3, 3, 2, 1, 3, 3, 1, 3, 1, 2, 2, 2, 1]
+    outputs = [3, 2, 3, 2, 1, 2, 1, 1, 2, 2, 3, 1, 3, 3, 2, 1, 3, 3, 1, 3, 1, 2, 2, 2, 1]
 
     for i in range(1, 26):
         image_name = ''
@@ -150,15 +150,14 @@ def task1(path):
         image = cv2.imread(path + image_name + '.jpg')
         image = cv2.resize(image, dsize=(0, 0), fx=0.2, fy=0.2)
         mask = toHSV(image)
-        dartsNo = countDarts(mask, 40)
 
-        # dartsNo = countDarts(path + image_name + '.jpg')
-        f = open('evaluation/Task1/' + image_name + '_predicted.txt', 'w')
-        f.write(str(dartsNo))
-        f.close()
+        dartsNo = countDarts(mask, 40)
+        if dartsNo != outputs[i - 1]:
+            print(i, dartsNo, outputs[i - 1])
+
+        # f = open('evaluation/Task1/' + image_name + '_predicted.txt', 'w')
+        # f.write(str(dartsNo))
+        # f.close()
 
         # template_matching(image_name)
         # getDiff(image_name)
-
-        # if dartsNo != outputs[i - 1]:
-        #     print(i, dartsNo, outputs[i - 1])
