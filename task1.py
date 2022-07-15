@@ -174,7 +174,7 @@ def countDarts(path):
             window = mask[y:y + size, x:x + size]
             white = np.count_nonzero(window)
             score = 100000 if white == 0 else size * size / white
-            if score < 9:
+            if score < 40:
                 best_squares += [((x, y), (x + size, y + size), score)]
 
     best_best_squares = getDartsAreas(best_squares)
@@ -225,6 +225,7 @@ def task1(path):
     # getClearImage('auxiliary_images/template_task1.jpg', 'auxiliary_images/gray_removed_noise.png')
     polygons = getEllipses()
     path += '/Task1/'
+    # outputs = [3, 2, 3, 2, 1, 2, 1, 1, 2, 2, 3, 1, 3, 3, 2, 1, 3, 3, 1, 3, 1, 2, 2, 2, 1]
 
     for i in range(1, 26):
         image_name = ''
@@ -239,3 +240,6 @@ def task1(path):
 
         # template_matching(image_name)
         # getDiff(image_name)
+
+        # if dartsNo != outputs[i - 1]:
+        #     print(i, dartsNo, outputs[i - 1])
