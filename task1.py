@@ -1,10 +1,12 @@
-from common import toHSV, countDarts
+from common import toHSV, countDarts, getImageName, getImageDiff
 import cv2
 
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 from matplotlib import pyplot as plt
+
+outputs = [3, 2, 3, 2, 1, 2, 1, 1, 2, 2, 3, 1, 3, 3, 2, 1, 3, 3, 1, 3, 1, 2, 2, 2, 1]
 
 
 def getClearImage(origin, destination):
@@ -135,29 +137,35 @@ def template_matching(path):
         plt.show()
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def processImage(image, image_name, i):
+    image = cv2.resize(image, dsize=(0, 0), fx=0.2, fy=0.2)
+    mask = toHSV(image)
+
+    dartsNo = countDarts(mask, 40)
+    if dartsNo != outputs[i - 1]:
+        print(i, dartsNo, outputs[i - 1])
+
+    f = open('evaluation/Task1/' + image_name + '_predicted.txt', 'w')
+    f.write(str(dartsNo))
+    f.close()
+
+
 def task1(path):
     # getClearImage('auxiliary_images/template_task1.jpg', 'auxiliary_images/gray_removed_noise.png')
-    polygons = getEllipses()
+    # polygons = getEllipses()
+    aux_image = cv2.imread('auxiliary_images/template_task1.jpg')
     path += '/Task1/'
-    outputs = [3, 2, 3, 2, 1, 2, 1, 1, 2, 2, 3, 1, 3, 3, 2, 1, 3, 3, 1, 3, 1, 2, 2, 2, 1]
 
     for i in range(1, 26):
-        image_name = ''
-        if i < 10:
-            image_name += '0'
-        image_name += str(i)
-
+        image_name = getImageName(i)
         image = cv2.imread(path + image_name + '.jpg')
-        image = cv2.resize(image, dsize=(0, 0), fx=0.2, fy=0.2)
-        mask = toHSV(image)
 
-        dartsNo = countDarts(mask, 40)
-        if dartsNo != outputs[i - 1]:
-            print(i, dartsNo, outputs[i - 1])
+        # processImage(image, image_name, i)
 
-        # f = open('evaluation/Task1/' + image_name + '_predicted.txt', 'w')
-        # f.write(str(dartsNo))
-        # f.close()
+        getImageDiff(image, aux_image)
 
         # template_matching(image_name)
         # getDiff(image_name)

@@ -5,6 +5,24 @@ from matplotlib import pyplot as plt
 from IPython import display
 
 
+def getImageName(i):
+    image_name = ''
+    if i < 10:
+        image_name += '0'
+    image_name += str(i)
+
+    return image_name
+
+
+def drawRectangle(mask, point1, point2):
+    clone = cv2.cvtColor(mask.copy(), cv2.COLOR_GRAY2BGR)
+    cv2.rectangle(clone, point1, point2, (0, 255, 0), 2)
+    clone = clone[:, :, ::-1]
+    plt.imshow(clone)
+    plt.pause(0.1)
+    display.clear_output(wait=True)
+
+
 def toHSV(diff):
     diff = cv2.cvtColor(diff, cv2.COLOR_BGR2HSV)
 
@@ -68,10 +86,20 @@ def countDarts(mask, score_th):
     return len(best_best_squares)
 
 
-def drawRectangle(mask, point1, point2):
-    clone = cv2.cvtColor(mask.copy(), cv2.COLOR_GRAY2BGR)
-    cv2.rectangle(clone, point1, point2, (0, 255, 0), 2)
-    clone = clone[:, :, ::-1]
-    plt.imshow(clone)
-    plt.pause(0.1)
-    display.clear_output(wait=True)
+def getImageDiff(image, aux_image):
+    diff = cv2.absdiff(image, aux_image)
+    diff = cv2.resize(diff, dsize=(0, 0), fx=0.2, fy=0.2)
+
+    gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    blur_gray = cv2.GaussianBlur(gray, (5, 5), 0)
+    edges = cv2.Canny(blur_gray, 100, 200)
+
+    cv2.namedWindow('diff', cv2.WINDOW_NORMAL)
+    cv2.namedWindow('gray', cv2.WINDOW_NORMAL)
+    cv2.namedWindow('edges', cv2.WINDOW_NORMAL)
+
+    cv2.imshow('diff', diff)
+    cv2.imshow('gray', gray)
+    cv2.imshow('edges', edges)
+
+    cv2.waitKey(0)
