@@ -103,3 +103,81 @@ def getImageDiff(image, aux_image):
     cv2.imshow('edges', edges)
 
     cv2.waitKey(0)
+
+
+def getBestSimilarity(template_path, path):
+    template = cv2.imread(template_path, 0)
+    template = template[50:-50, 50:-50]
+    template = cv2.resize(template, dsize=(0, 0), fx=0.2, fy=0.2)
+    w, h = template.shape[::-1]
+
+    image = cv2.imread(path, 0)
+    image = cv2.resize(image, dsize=(0, 0), fx=0.2, fy=0.2)
+
+    score = cv2.matchTemplate(image, template, cv2.TM_SQDIFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(score)
+
+    top_left = min_loc
+    bottom_right = (top_left[0] + h, top_left[1] + w)
+
+    diff = cv2.absdiff(image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]], template)
+    # diff = cv2.resize(diff, dsize=(0, 0), fx=0.2, fy=0.2)
+
+    cv2.imshow('diff', diff)
+    cv2.waitKey(0)
+
+    return diff
+
+    # methods = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR',
+    #            'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED']
+    #     if method in [cv2.TM_SQDIFF, cv2.TM_SQDIFF_NORMED]:
+    #         top_left = min_loc
+    #     else:
+    #         top_left = max_loc
+
+
+def getDiff(path):
+    aux_image = cv2.imread('auxiliary_images/template_task1.jpg')
+    # aux_image = cv2.cvtColor(aux_image, cv2.COLOR_BGR2HSV)
+    aux_gray = cv2.cvtColor(aux_image, cv2.COLOR_BGR2GRAY)
+
+    image = cv2.imread(path)
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    diff = cv2.absdiff(image, aux_image)
+    # diff = cv2.cvtColor(diff, cv2.COLOR_BGR2HSV)
+    # gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+
+    # canvas = np.zeros_like(image, np.uint8)
+    # canvas[diff > 1] = image[diff > 1]
+
+    cv2.imshow('diff', diff)
+    cv2.waitKey(0)
+
+    # toHSV(image, diff)
+
+    # # start clearImage
+    # gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    # _, gray = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
+    #
+    # # Downsize image (by factor 4) to speed up morphological operations
+    # gray = cv2.resize(gray, dsize=(0, 0), fx=0.25, fy=0.25)
+    #
+    # # Morphological opening: Get rid of the stuff at the top of the ellipse
+    # gray = cv2.morphologyEx(gray, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+    #
+    # # Resize image to original size
+    # gray = cv2.resize(gray, dsize=(image.shape[1], image.shape[0]))
+    # # end clearImage
+    #
+    # cnts, hier = cv2.findContours(gray, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    # print([len(point) for point in cnts])
+    #
+    # image = cv2.drawContours(cv2.imread(path + image_name), [polygon for polygon in cnts if len(cnts) > 1000], -1,
+    #                          (0, 0, 255), 2)
+    # out_image = cv2.resize(image, dsize=(0, 0), fx=0.25, fy=0.25)
+    # cv2.imwrite('test_diff_clear.png', out_image)
+
+    # cv2.imwrite('test_diff_gray.png', gray)
+    # cv2.imwrite('evaluation/Task1/.' + image_name, gray)
