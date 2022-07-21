@@ -14,8 +14,8 @@ def getImageName(i):
     return image_name
 
 
-def drawRectangle(mask, point1, point2):
-    clone = cv2.cvtColor(mask.copy(), cv2.COLOR_GRAY2BGR)
+def drawRectangle(image, point1, point2):
+    clone = image.copy()
     cv2.rectangle(clone, point1, point2, (0, 255, 0), 2)
     clone = clone[:, :, ::-1]
     plt.imshow(clone)
@@ -83,7 +83,7 @@ def countDarts(mask, score_th):
 
     best_best_squares = getDartsAreas(best_squares)
 
-    return len(best_best_squares)
+    return best_best_squares
 
 
 def getImageDiff(image, aux_image):
@@ -120,7 +120,18 @@ def getBestSimilarity(template_path, path):
     top_left = min_loc
     bottom_right = (top_left[0] + h, top_left[1] + w)
 
-    diff = cv2.absdiff(image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]], template)
+    image = image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]]
+    image = cv2.GaussianBlur(image, (5, 5), 0)
+    # template = cv2.GaussianBlur(template, (5, 5), 0)
+
+    diff = cv2.absdiff(image, template)
+
+    # mask = cv2.inRange(image, np.array([98, 94, 90]), np.array([188, 184, 183]))
+    # diff = cv2.bitwise_and(template, template, mask=image)
+    # diff = cv2.bitwise_or(image, image, mask=template)
+    # diff = cv2.bitwise_not(template)
+
+    # edges = cv2.Canny(diff, 100, 200)
     # diff = cv2.resize(diff, dsize=(0, 0), fx=0.2, fy=0.2)
 
     cv2.imshow('diff', diff)

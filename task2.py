@@ -10,7 +10,8 @@ def processImage(image, clearImage, image_name, i):
     diff = cv2.absdiff(image, clearImage)
     mask = toHSV(diff)
 
-    dartsNo = countDarts(mask, 20)
+    darts = countDarts(mask, 20)
+    dartsNo = len(darts)
     if dartsNo != outputs[i - 1]:
         print(i, dartsNo, outputs[i - 1])
 

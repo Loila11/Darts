@@ -1,4 +1,5 @@
-from common import toHSV, countDarts, getImageName, getImageDiff, getBestSimilarity
+from common import toHSV, countDarts, getImageName, getImageDiff, getBestSimilarity, drawRectangle
+
 import cv2
 
 from shapely.geometry import Point
@@ -57,22 +58,29 @@ def getPointScore(polygons, x, y):
     return 0
 
 
-def processImage(image, image_name, i):
+def processImage(image, image_name, i, polygons):
     image = cv2.resize(image, dsize=(0, 0), fx=0.2, fy=0.2)
     mask = toHSV(image)
 
-    dartsNo = countDarts(mask, 40)
+    darts = countDarts(mask, 40)
+    dartsNo = len(darts)
     if dartsNo != outputs[i - 1]:
         print(i, dartsNo, outputs[i - 1])
 
     f = open('evaluation/Task1/' + image_name + '_predicted.txt', 'w')
     f.write(str(dartsNo))
+
+    for dart in darts:
+        # drawRectangle(image, (dart[0][0] - 70, dart[0][1]), (dart[1][0], dart[1][1] + 20))
+        score = getPointScore(polygons, dart[0][0] - 60, (dart[1][1] - dart[0][1]) / 2)
+        f.write('\n' + str(score))
+
     f.close()
 
 
 def task1(path):
     # getClearImage('auxiliary_images/template_task1.jpg', 'auxiliary_images/gray_removed_noise.png')
-    # polygons = getEllipses()
+    polygons = getEllipses()
     aux_image = cv2.imread('auxiliary_images/template_task1.jpg')
     path += '/Task1/'
 
@@ -80,9 +88,9 @@ def task1(path):
         image_name = getImageName(i)
         image = cv2.imread(path + image_name + '.jpg')
 
-        # processImage(image, image_name, i)
+        processImage(image, image_name, i, polygons)
         # getImageDiff(image, aux_image)
-        getBestSimilarity(path + image_name + '.jpg', 'auxiliary_images/template_task1.jpg')
+        # getBestSimilarity(path + image_name + '.jpg', 'auxiliary_images/template_task1.jpg')
 
         # template_matching(image_name)
         # getDiff(image_name)
