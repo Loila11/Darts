@@ -5,6 +5,12 @@ from common import getImageName
 
 
 def checkScore(path):
+    """
+    Custom eval used to check score differences
+
+    :param path: the path where to find the train / test data
+    :return: None
+    """
     accuracy = 0
 
     for i in range(1, 26):
@@ -30,6 +36,12 @@ def checkScore(path):
 
 
 def main(path):
+    """
+    Main function, it calls the solving functions for each task.
+
+    :param path: the path where to find the train / test data
+    :return: None
+    """
     # TODO: fitting darts
     # for outliers: robust fitting, RANSAC
     # for many lines: voting methods - RANSAC, Hough transform

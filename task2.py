@@ -1,9 +1,15 @@
-from common import toHSV, countDarts, getImageName, getImageDiff, getEllipses, writeSolution
+from common import toHSV, countDarts, getImageName, getEllipses, writeSolution
 from shapely.geometry import Point
 import cv2
 
 
 def getPolygons():
+    """
+    Get all areas of interest on the dartboard. In this case, it will be a list containing concentric discs for the
+    flags, followed by a list of regions.
+
+    :return: list of polygons
+    """
     polygons = getEllipses('auxiliary_images/task2_template0.png', 100, 5000)
     for i in [1, 3]:
         polygons[i], polygons[i + 1] = polygons[i + 1], polygons[i]
@@ -15,6 +21,14 @@ def getPolygons():
 
 
 def getPointScore(polygons, x, y):
+    """
+    Given a point's coordinates and the list of polygons, calculate the score at the given position.
+
+    :param polygons: list of relevant regions on the board
+    :param x: coordinate on the axis Ox
+    :param y: coordinate on the axis Oy
+    :return: the score at the given position
+    """
     mapping_template = [19, 17, 16, 15, 11, 6, 9, 4, 1, 5, 3, 7, 2, 8, 10, 14, 13, 18, 12, 20]
     point = Point(x, y)
 
@@ -35,6 +49,15 @@ def getPointScore(polygons, x, y):
 
 
 def processImage(image, clearImage, image_name, polygons):
+    """
+    Process the given image, identify the darts on the board and write the solution.
+
+    :param image: an image containing a dart board with some darts on it
+    :param clearImage: the dartboard without darts, used as a mask
+    :param image_name: image identifier, used for writing the output file
+    :param polygons: the list of concentric discs used for score calculation
+    :return: None
+    """
     diff = cv2.absdiff(image, clearImage)
     mask = toHSV(diff)
     darts = countDarts(mask, 12)
@@ -43,6 +66,12 @@ def processImage(image, clearImage, image_name, polygons):
 
 
 def task2(path):
+    """
+    Get preliminary data and apply algorithm on all images.
+
+    :param path: the path where to find the train / test data
+    :return: None
+    """
     # getClearImage('auxiliary_images/template_task2.jpg', 'auxiliary_images/gray_removed_noise2.png')
     clearImage = cv2.imread('auxiliary_images/template_task2.jpg')
     polygons = getPolygons()
@@ -53,6 +82,4 @@ def task2(path):
         image = cv2.imread(path + image_name + '.jpg')
 
         processImage(image, clearImage, image_name, polygons)
-        # getImageDiff(image, auxImage)
         # template_matching(image_name)
-        # getDiff(image_name)
