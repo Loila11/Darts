@@ -190,3 +190,22 @@ def getDiff(path):
 
     # cv2.imwrite('test_diff_gray.png', gray)
     # cv2.imwrite('evaluation/Task1/.' + image_name, gray)
+
+
+def getClearImage(origin, destination):
+    image = cv2.imread(origin)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    _, gray = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
+
+    # Downsize image (by factor 4) to speed up morphological operations
+    gray = cv2.resize(gray, dsize=(0, 0), fx=0.25, fy=0.25)
+
+    # Morphological opening: Get rid of the stuff at the top of the ellipse
+    gray = cv2.morphologyEx(gray, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+
+    # Resize image to original size
+    gray = cv2.resize(gray, dsize=(image.shape[1], image.shape[0]))
+    cv2.imwrite(destination, gray)
+
+    return gray

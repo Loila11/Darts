@@ -37,6 +37,7 @@ def main(path):
     # task1(path)
     # checkScore('evaluation/Task1')
     task2(path)
+    checkScore('evaluation/Task2')
     # task3(path)
 
 
