@@ -1,5 +1,4 @@
-from common import toHSV, countDarts, getImageName, getImageDiff, getBestSimilarity, drawRectangle, getEllipses, \
-    writeSolution
+from common import toHSV, countDarts, getImageName, getImageDiff, getBestSimilarity, getEllipses, writeSolution
 from shapely.geometry import Point
 import cv2
 
@@ -8,6 +7,7 @@ def getPolygons():
     polygons = getEllipses('auxiliary_images/gray_removed_noise.png', 200, 10000)
     for i in [1, 3, 5, 7]:
         polygons[i], polygons[i + 1] = polygons[i + 1], polygons[i]
+
     return polygons
 
 

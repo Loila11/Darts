@@ -1,12 +1,16 @@
-from common import toHSV, countDarts, getImageName, getImageDiff, drawRectangle, getEllipses, writeSolution
+from common import toHSV, countDarts, getImageName, getImageDiff, getEllipses, writeSolution
 from shapely.geometry import Point
 import cv2
 
 
 def getPolygons():
-    polygons = getEllipses('auxiliary_images/task2_template2.png', 100, 500)
+    polygons = getEllipses('auxiliary_images/task2_template0.png', 100, 5000)
+    for i in [1, 3]:
+        polygons[i], polygons[i + 1] = polygons[i + 1], polygons[i]
+
     polygons += getEllipses('auxiliary_images/task2_template1.png', 500, 2000)
     polygons += getEllipses('auxiliary_images/task2_template2.png', 500, 2000)
+
     return polygons
 
 
@@ -18,9 +22,14 @@ def getPointScore(polygons, x, y):
         return 'b50'
     if polygons[1].contains(point):
         return 'b25'
-    for i in range(2, len(polygons)):
+    for i in range(6, len(polygons)):
         if polygons[i].contains(point):
-            return 's' + str(mapping_template[i - 2])
+            score = 's'
+            if polygons[3].contains(point) and not polygons[2].contains(point):
+                score = 't'
+            elif polygons[5].contains(point) and not polygons[4].contains(point):
+                score = 'd'
+            return score + str(mapping_template[i - 6])
 
     return '0'
 
