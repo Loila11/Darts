@@ -34,8 +34,8 @@ def main(path):
     # for outliers: robust fitting, RANSAC
     # for many lines: voting methods - RANSAC, Hough transform
 
+    task1(path)
     checkScore('evaluation/Task1')
-    # task1(path)
     # task2(path)
     # task3(path)
 

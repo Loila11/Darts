@@ -16,7 +16,7 @@ def getImageName(i):
 
 def drawRectangle(image, point1, point2):
     clone = image.copy()
-    cv2.rectangle(clone, point1, point2, (0, 255, 0), 2)
+    cv2.rectangle(clone, point1, point2, (0, 255, 0), 10)
     clone = clone[:, :, ::-1]
     plt.imshow(clone)
     plt.pause(0.1)
@@ -71,10 +71,10 @@ def getDartsAreas(best_squares):
 
 def countDarts(mask, score_th):
     best_squares = []
-    size = 30
-    step = 10
-    for y in range(50, mask.shape[0] - size, step):
-        for x in range(50, mask.shape[1] - size, step):
+    size = 100
+    step = 50
+    for y in range(250, mask.shape[0] - size, step):
+        for x in range(250, mask.shape[1] - size, step):
             window = mask[y:y + size, x:x + size]
             white = np.count_nonzero(window)
             score = 100000 if white == 0 else size * size / white
@@ -82,13 +82,13 @@ def countDarts(mask, score_th):
                 best_squares += [((x, y), (x + size, y + size), score)]
 
     best_best_squares = getDartsAreas(best_squares)
+    best_best_squares = getDartsAreas(best_best_squares)
 
     return best_best_squares
 
 
 def getImageDiff(image, aux_image):
     diff = cv2.absdiff(image, aux_image)
-    diff = cv2.resize(diff, dsize=(0, 0), fx=0.2, fy=0.2)
 
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     blur_gray = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -108,11 +108,9 @@ def getImageDiff(image, aux_image):
 def getBestSimilarity(template_path, path):
     template = cv2.imread(template_path, 0)
     template = template[50:-50, 50:-50]
-    template = cv2.resize(template, dsize=(0, 0), fx=0.2, fy=0.2)
     w, h = template.shape[::-1]
 
     image = cv2.imread(path, 0)
-    image = cv2.resize(image, dsize=(0, 0), fx=0.2, fy=0.2)
 
     score = cv2.matchTemplate(image, template, cv2.TM_SQDIFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(score)

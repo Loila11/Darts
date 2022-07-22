@@ -36,12 +36,11 @@ def getEllipses():
     cnts = [polygon for polygon in cnts if 200 < len(polygon) < 10000]
 
     # Draw found contours in input image
-    image = cv2.drawContours(image, cnts, -1, (0, 0, 255), 2)
     # print(len(cnts))
-
-    # Downsize image
-    out_image = cv2.resize(image, dsize=(0, 0), fx=0.25, fy=0.25)
-    cv2.imwrite('test_ellipses.png', out_image)
+    # out_image = cv2.drawContours(cv2.imread('train/Task1/01.jpg'), cnts, -1, (0, 0, 255), 2)
+    # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
+    # cv2.imshow('test_ellipses', out_image)
+    # cv2.waitKey(0)
 
     polygons = [Polygon([(point[0], point[1]) for [point] in polygon]) for polygon in cnts]
     for i in [1, 3, 5, 7]:
@@ -52,14 +51,13 @@ def getEllipses():
 
 def getPointScore(polygons, x, y):
     point = Point(x, y)
-    for i in range(9, -1, -1):
+    for i in range(10):
         if polygons[i].contains(point):
             return 10 - i
     return 0
 
 
 def processImage(image, image_name, i, polygons):
-    image = cv2.resize(image, dsize=(0, 0), fx=0.2, fy=0.2)
     mask = toHSV(image)
 
     darts = countDarts(mask, 40)
@@ -71,8 +69,9 @@ def processImage(image, image_name, i, polygons):
     f.write(str(dartsNo))
 
     for dart in darts:
-        # drawRectangle(image, (dart[0][0] - 70, dart[0][1]), (dart[1][0], dart[1][1] + 20))
-        score = getPointScore(polygons, dart[0][0] - 60, (dart[1][1] - dart[0][1]) / 2)
+        x = int(dart[0][0] - 300)
+        y = int(dart[0][1] + (dart[1][1] - dart[0][1]) / 2)
+        score = getPointScore(polygons, x, y)
         f.write('\n' + str(score))
 
     f.close()
@@ -80,8 +79,8 @@ def processImage(image, image_name, i, polygons):
 
 def task1(path):
     # getClearImage('auxiliary_images/template_task1.jpg', 'auxiliary_images/gray_removed_noise.png')
-    polygons = getEllipses()
     aux_image = cv2.imread('auxiliary_images/template_task1.jpg')
+    polygons = getEllipses()
     path += '/Task1/'
 
     for i in range(1, 26):
