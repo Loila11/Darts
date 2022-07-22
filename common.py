@@ -4,6 +4,8 @@ import cv2
 from matplotlib import pyplot as plt
 from IPython import display
 
+from shapely.geometry.polygon import Polygon
+
 
 def getImageName(i):
     image_name = ''
@@ -21,6 +23,54 @@ def drawRectangle(image, point1, point2):
     plt.imshow(clone)
     plt.pause(0.1)
     display.clear_output(wait=True)
+
+
+def getEllipses(path, th_low, th_high):
+    image = cv2.imread(path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Find contours
+    cnts, hier = cv2.findContours(gray, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    cnts = [polygon for polygon in cnts if th_low < len(polygon) < th_high]
+
+    # Draw found contours in input image - task 1
+    # print(len(cnts))
+    # out_image = cv2.drawContours(cv2.imread('train/Task1/01.jpg'), cnts, -1, (0, 0, 255), 2)
+    # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
+    # cv2.imshow('test_ellipses', out_image)
+    # cv2.waitKey(0)
+
+    # Draw found contours in input image - task 2
+    # print(len(cnts))
+    # for i in range(len(cnts)):
+    #     print(len(cnts[i]))
+    #     out_image = cv2.drawContours(image, cnts[i], -1, (0, 0, 255), 10)
+    #     # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
+    #     plt.imshow(out_image)
+    #     plt.pause(0.1)
+    #     display.clear_output(wait=True)
+
+    polygons = [Polygon([(point[0], point[1]) for [point] in polygon]) for polygon in cnts]
+    return polygons
+
+
+def getClearImage(origin, destination):
+    image = cv2.imread(origin)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    _, gray = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
+
+    # Downsize image (by factor 4) to speed up morphological operations
+    gray = cv2.resize(gray, dsize=(0, 0), fx=0.25, fy=0.25)
+
+    # Morphological opening: Get rid of the stuff at the top of the ellipse
+    gray = cv2.morphologyEx(gray, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+
+    # Resize image to original size
+    gray = cv2.resize(gray, dsize=(image.shape[1], image.shape[0]))
+    cv2.imwrite(destination, gray)
+
+    return gray
 
 
 def toHSV(diff):
@@ -192,20 +242,14 @@ def getDiff(path):
     # cv2.imwrite('evaluation/Task1/.' + image_name, gray)
 
 
-def getClearImage(origin, destination):
-    image = cv2.imread(origin)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def writeSolution(path, darts, getPointScore, polygons):
+    f = open(path, 'w')
+    f.write(str(len(darts)))
 
-    _, gray = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
+    for dart in darts:
+        x = int(dart[0][0] - 300)
+        y = int(dart[0][1] + (dart[1][1] - dart[0][1]) / 2)
+        score = getPointScore(polygons, x, y)
+        f.write('\n' + str(score))
 
-    # Downsize image (by factor 4) to speed up morphological operations
-    gray = cv2.resize(gray, dsize=(0, 0), fx=0.25, fy=0.25)
-
-    # Morphological opening: Get rid of the stuff at the top of the ellipse
-    gray = cv2.morphologyEx(gray, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
-
-    # Resize image to original size
-    gray = cv2.resize(gray, dsize=(image.shape[1], image.shape[0]))
-    cv2.imwrite(destination, gray)
-
-    return gray
+    f.close()
