@@ -5,8 +5,6 @@ import cv2
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
-outputs = [3, 2, 3, 2, 1, 2, 1, 1, 2, 2, 3, 1, 3, 3, 2, 1, 3, 3, 1, 3, 1, 2, 2, 2, 1]
-
 
 def getClearImage(origin, destination):
     image = cv2.imread(origin)
@@ -57,16 +55,13 @@ def getPointScore(polygons, x, y):
     return 0
 
 
-def processImage(image, image_name, i, polygons):
+def processImage(image, image_name, polygons):
     mask = toHSV(image)
 
     darts = countDarts(mask, 40)
-    dartsNo = len(darts)
-    if dartsNo != outputs[i - 1]:
-        print(i, dartsNo, outputs[i - 1])
 
     f = open('evaluation/Task1/' + image_name + '_predicted.txt', 'w')
-    f.write(str(dartsNo))
+    f.write(str(len(darts)))
 
     for dart in darts:
         x = int(dart[0][0] - 300)
@@ -87,9 +82,8 @@ def task1(path):
         image_name = getImageName(i)
         image = cv2.imread(path + image_name + '.jpg')
 
-        processImage(image, image_name, i, polygons)
+        processImage(image, image_name, polygons)
         # getImageDiff(image, aux_image)
         # getBestSimilarity(path + image_name + '.jpg', 'auxiliary_images/template_task1.jpg')
-
         # template_matching(image_name)
         # getDiff(image_name)
