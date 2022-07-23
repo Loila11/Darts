@@ -75,11 +75,9 @@ def task2(path):
     # getClearImage('auxiliary_images/template_task2.jpg', 'auxiliary_images/gray_removed_noise2.png')
     clearImage = cv2.imread('auxiliary_images/template_task2.jpg')
     polygons = getPolygons()
-    path += '/Task2/'
 
     for i in range(1, 26):
         image_name = getImageName(i)
         image = cv2.imread(path + image_name + '.jpg')
 
         processImage(image, clearImage, image_name, polygons)
-        # template_matching(image_name)

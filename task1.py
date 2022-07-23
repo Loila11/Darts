@@ -1,4 +1,4 @@
-from common import toHSV, countDarts, getImageName, getBestSimilarity, getEllipses, writeSolution
+from common import toHSV, countDarts, getImageName, getEllipses, writeSolution
 from shapely.geometry import Point
 import cv2
 
@@ -58,12 +58,9 @@ def task1(path):
     # getClearImage('auxiliary_images/template_task1.jpg', 'auxiliary_images/gray_removed_noise.png')
     aux_image = cv2.imread('auxiliary_images/template_task1.jpg')
     polygons = getPolygons()
-    path += '/Task1/'
 
     for i in range(1, 26):
         image_name = getImageName(i)
         image = cv2.imread(path + image_name + '.jpg')
 
         processImage(image, image_name, polygons)
-        # getBestSimilarity(path + image_name + '.jpg', 'auxiliary_images/template_task1.jpg')
-        # template_matching(image_name)

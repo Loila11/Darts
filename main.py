@@ -42,15 +42,11 @@ def main(path):
     :param path: the path where to find the train / test data
     :return: None
     """
-    # TODO: fitting darts
-    # for outliers: robust fitting, RANSAC
-    # for many lines: voting methods - RANSAC, Hough transform
-
-    # task1(path)
+    task1(path + '/Task1/')
     # checkScore('evaluation/Task1')
-    task2(path)
-    checkScore('evaluation/Task2')
-    # task3(path)
+    task2(path + '/Task2/')
+    # checkScore('evaluation/Task2')
+    # task3(path + '/Task3/')
 
 
 main('train')

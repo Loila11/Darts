@@ -25,6 +25,7 @@ def getImageName(i):
 def drawRectangle(image, point1, point2):
     """
     Draw a rectangle at the given position.
+    code source: https://pythonmana.com/2022/03/202203090300273871.html
 
     :param image: image on which to draw
     :param point1: top-left point
@@ -80,6 +81,7 @@ def getClearImage(origin, destination):
     """
     Preprocessing step - turn a template into its clear form, without noise or numbers. The clear image will be used to
     get the relevant polygons.
+    code source: https://datascience.stackexchange.com/questions/69397/ellipses-detecting-at-the-image
 
     :param origin: original image file path
     :param destination: where to save the clear image version
@@ -115,8 +117,6 @@ def toHSV(image):
 
     # gray mask
     # mask = cv2.inRange(image, np.array([98, 94, 90]), np.array([188, 184, 183]))
-
-    # res = cv2.bitwise_and(diff, diff, mask=mask)
 
     return mask
 
@@ -201,20 +201,11 @@ def getBestSimilarity(template_path, path):
     image = cv2.GaussianBlur(image, (5, 5), 0)
 
     diff = cv2.absdiff(image, template)
-    # edges = cv2.Canny(diff, 100, 200)
 
     cv2.imshow('diff', diff)
     cv2.waitKey(0)
 
     return diff
-
-    # alternative pattern maching methods:
-    # methods = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR',
-    #            'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED']
-    #     if method in [cv2.TM_SQDIFF, cv2.TM_SQDIFF_NORMED]:
-    #         top_left = min_loc
-    #     else:
-    #         top_left = max_loc
 
 
 def writeSolution(path, darts, getPointScore, polygons):
