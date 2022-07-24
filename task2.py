@@ -1,4 +1,4 @@
-from common import toHSV, countDarts, getImageName, getEllipses, writeSolution
+from common import getClearImage, getEllipses, getFileName, toHSV, countDarts, writeSolution
 from shapely.geometry import Point
 import cv2
 
@@ -72,12 +72,14 @@ def task2(path):
     :param path: the path where to find the train / test data
     :return: None
     """
-    # getClearImage('auxiliary_images/template_task2.jpg', 'auxiliary_images/gray_removed_noise2.png')
-    clearImage = cv2.imread('auxiliary_images/template_task2.jpg')
+    # getClearImage('auxiliary_images/template_task2.jpg', 'auxiliary_images/task2_template0.png')
+
     polygons = getPolygons()
 
+    clearImage = cv2.imread('auxiliary_images/template_task2.jpg')
+
     for i in range(1, 26):
-        image_name = getImageName(i)
+        image_name = getFileName(i)
         image = cv2.imread(path + image_name + '.jpg')
 
         processImage(image, clearImage, image_name, polygons)

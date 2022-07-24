@@ -7,19 +7,19 @@ from IPython import display
 from shapely.geometry.polygon import Polygon
 
 
-def getImageName(i):
+def getFileName(i):
     """
     Compose image name from its number.
 
     :param i: image number
     :return: image name
     """
-    image_name = ''
+    file_name = ''
     if i < 10:
-        image_name += '0'
-    image_name += str(i)
+        file_name += '0'
+    file_name += str(i)
 
-    return image_name
+    return file_name
 
 
 def drawRectangle(image, point1, point2):
@@ -56,22 +56,15 @@ def getEllipses(path, th_low, th_up):
     cnts, hier = cv2.findContours(gray, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     cnts = [polygon for polygon in cnts if th_low < len(polygon) < th_up]
 
-    # Draw found contours in input image - task 1
-    # print(len(cnts))
-    # out_image = cv2.drawContours(cv2.imread('train/Task1/01.jpg'), cnts, -1, (0, 0, 255), 2)
-    # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
-    # cv2.imshow('test_ellipses', out_image)
-    # cv2.waitKey(0)
-
-    # Draw found contours in input image - task 2
-    # print(len(cnts))
-    # for i in range(len(cnts)):
-    #     print(len(cnts[i]))
-    #     out_image = cv2.drawContours(image, cnts[i], -1, (0, 0, 255), 10)
-    #     # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
-    #     plt.imshow(out_image)
-    #     plt.pause(0.1)
-    #     display.clear_output(wait=True)
+    # Draw found contours in input image
+    print(len(cnts))
+    for i in range(len(cnts)):
+        print(len(cnts[i]))
+        out_image = cv2.drawContours(image, cnts[i], -1, (0, 0, 255), 10)
+        # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
+        plt.imshow(out_image)
+        plt.pause(0.1)
+        display.clear_output(wait=True)
 
     polygons = [Polygon([(point[0], point[1]) for [point] in polygon]) for polygon in cnts]
     return polygons
