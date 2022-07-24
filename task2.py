@@ -20,16 +20,16 @@ def getPolygons():
     return polygons
 
 
-def getPointScore(polygons, x, y):
+def getPointScore(polygons, x, y, mapping_template):
     """
     Given a point's coordinates and the list of polygons, calculate the score at the given position.
 
     :param polygons: list of relevant regions on the board
     :param x: coordinate on the axis Ox
     :param y: coordinate on the axis Oy
+    :param mapping_template: mapping between each polygon and the score inside it
     :return: the score at the given position
     """
-    mapping_template = [19, 17, 16, 15, 11, 6, 9, 4, 1, 5, 3, 7, 2, 8, 10, 14, 13, 18, 12, 20]
     point = Point(x, y)
 
     if polygons[0].contains(point):
@@ -55,14 +55,15 @@ def processImage(image, clearImage, image_name, polygons):
     :param image: an image containing a dart board with some darts on it
     :param clearImage: the dartboard without darts, used as a mask
     :param image_name: image identifier, used for writing the output file
-    :param polygons: the list of concentric discs used for score calculation
+    :param polygons: the list of concentric discs and regions used for score calculation
     :return: None
     """
     diff = cv2.absdiff(image, clearImage)
     mask = toHSV(diff)
     darts = countDarts(mask, 12)
 
-    writeSolution('evaluation/Task2/' + image_name + '_predicted.txt', darts, getPointScore, polygons)
+    mapping_template = [19, 17, 16, 15, 11, 6, 9, 4, 1, 5, 3, 7, 2, 8, 10, 14, 13, 18, 12, 20]
+    writeSolution('evaluation/Task2/' + image_name + '_predicted.txt', darts, getPointScore, polygons, mapping_template)
 
 
 def task2(path):

@@ -57,14 +57,14 @@ def getEllipses(path, th_low, th_up):
     cnts = [polygon for polygon in cnts if th_low < len(polygon) < th_up]
 
     # Draw found contours in input image
-    print(len(cnts))
-    for i in range(len(cnts)):
-        print(len(cnts[i]))
-        out_image = cv2.drawContours(image, cnts[i], -1, (0, 0, 255), 10)
-        # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
-        plt.imshow(out_image)
-        plt.pause(0.1)
-        display.clear_output(wait=True)
+    # print(len(cnts))
+    # for i in range(len(cnts)):
+    #     print(len(cnts[i]))
+    #     out_image = cv2.drawContours(image, cnts[i], -1, (0, 0, 255), 10)
+    #     # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
+    #     plt.imshow(out_image)
+    #     plt.pause(0.1)
+    #     display.clear_output(wait=True)
 
     polygons = [Polygon([(point[0], point[1]) for [point] in polygon]) for polygon in cnts]
     return polygons
@@ -201,14 +201,15 @@ def getBestSimilarity(template_path, path):
     return diff
 
 
-def writeSolution(path, darts, getPointScore, polygons):
+def writeSolution(path, darts, getPointScore, polygons, mapping_template=None):
     """
     Get solution and write it in an output file.
 
     :param path: output file path
     :param darts: list of dart flag positions
-    :param getPointScore: function used to calculate the score at a given position - different for task 2 and 3
+    :param getPointScore: function used to calculate the score at a given position - different for each task
     :param polygons: list of polygons with relevant information
+    :param mapping_template: mapping between each polygon and the score inside it. None for task 1
     :return: None
     """
     f = open(path, 'w')
@@ -217,7 +218,12 @@ def writeSolution(path, darts, getPointScore, polygons):
     for dart in darts:
         x = int(dart[0][0] - 300)
         y = int(dart[0][1] + (dart[1][1] - dart[0][1]) / 2)
-        score = getPointScore(polygons, x, y)
+
+        if mapping_template is None:
+            score = getPointScore(polygons, x, y)
+        else:
+            score = getPointScore(polygons, x, y, mapping_template)
+
         f.write('\n' + str(score))
 
     f.close()
