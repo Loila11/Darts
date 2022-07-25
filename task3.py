@@ -15,8 +15,8 @@ def getPolygons(case):
     """
     if case == 0:
         polygons = getEllipses('auxiliary_images/task3_template00.png', 100, 3000)
-        polygons += getEllipses('auxiliary_images/task3_template01.png', 1000, 1500)
-        polygons += getEllipses('auxiliary_images/task3_template02.png', 1000, 1500)
+        polygons += getEllipses('auxiliary_images/task3_template01.png', 700, 1500)
+        polygons += getEllipses('auxiliary_images/task3_template02.png', 700, 1500)
     elif case == 1:
         polygons = getEllipses('auxiliary_images/task3_template10.png', 100, 5000)
         polygons[0], polygons[1] = polygons[1], polygons[0]
@@ -44,7 +44,7 @@ def setData():
     ]
     mapping_template = [
         [18, 20, 1, 5],
-        [19, 17, 16, 15, 9, 11, 3, 2, 7, 10, 8],
+        [17, 19, 15, 16, 9, 11, 3, 2, 7, 10, 8],
         [6, 11, 4, 9, 1, 5, 13, 14, 18, 12, 20]
     ]
     aux_image = [
@@ -119,7 +119,7 @@ def processVideo(first_image, last_image, case, video_name, polygons, mapping_te
 
     writeSolution(
         'evaluation/Task3/' + video_name + '_predicted.txt',
-        [(darts[0][1], darts[1][0])],
+        [(darts[0][0] + 10, darts[1][1] + 10)],
         getPointScore,
         polygons,
         mapping_template,

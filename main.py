@@ -40,9 +40,14 @@ def checkScore(path, taskNot3=True):
             if score in lines_train:
                 accuracy += 1
             else:
+                if not taskNot3 and score[1:] == lines_train[0][1:]:
+                    accuracy += 0.5
                 print(f'Wrong score for file {file_name} - {score} not in {lines_train}')
 
-    print(f'Model accuracy: {accuracy / 50}')
+    accuracy /= 25
+    if taskNot3:
+        accuracy /= 2
+    print(f'Model accuracy: {accuracy}')
 
 
 def main(path):
@@ -52,12 +57,12 @@ def main(path):
     :param path: the path where to find the train / test data
     :return: None
     """
-    task1(path + '/Task1/')
-    checkScore('evaluation/Task1')
-    task2(path + '/Task2/')
-    checkScore('evaluation/Task2')
-    # task3(path + '/Task3/')
-    # checkScore('evaluation/Task3', False)
+    # task1(path + '/Task1/')
+    # checkScore('evaluation/Task1')
+    # task2(path + '/Task2/')
+    # checkScore('evaluation/Task2')
+    task3(path + '/Task3/')
+    checkScore('evaluation/Task3', False)
 
 
 main('train')
