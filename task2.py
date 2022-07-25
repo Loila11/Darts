@@ -48,6 +48,17 @@ def getPointScore(polygons, x, y, mapping_template):
     return '0'
 
 
+def getTipPositions(darts):
+    """
+    Get the dart tips positions.
+
+    :param darts: the list of darts
+    :return: the list of positions where the darts enter the board
+    """
+    darts = [(int(dart[0][0] - 300), int(dart[0][1] + (dart[1][1] - dart[0][1]) / 2)) for dart in darts]
+    return darts
+
+
 def processImage(image, clearImage, image_name, polygons):
     """
     Process the given image, identify the darts on the board and write the solution.
@@ -63,7 +74,13 @@ def processImage(image, clearImage, image_name, polygons):
     darts = countDarts(mask, 12)
 
     mapping_template = [19, 17, 16, 15, 11, 6, 9, 4, 1, 5, 3, 7, 2, 8, 10, 14, 13, 18, 12, 20]
-    writeSolution('evaluation/Task2/' + image_name + '_predicted.txt', darts, getPointScore, polygons, mapping_template)
+    writeSolution(
+        'evaluation/Task2/' + image_name + '_predicted.txt',
+        getTipPositions(darts),
+        getPointScore,
+        polygons,
+        mapping_template
+    )
 
 
 def task2(path):

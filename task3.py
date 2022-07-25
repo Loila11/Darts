@@ -1,5 +1,6 @@
-from common import getClearImage, getEllipses, getFileName, toHSV, countDarts, writeSolution
+from common import getClearImage, getEllipses, getFileName, toHSV, countDarts, writeSolution, drawRectangle
 from shapely.geometry import Point
+import numpy as np
 import cv2
 
 
@@ -30,6 +31,44 @@ def getPolygons(case):
     return polygons
 
 
+def setData():
+    """
+    Set preliminary data as lists dependent on the video case.
+
+    :return: The list of polygons, mappings between polygons and scores and template images for case identification
+    """
+    polygons = [
+        getPolygons(0),
+        getPolygons(1),
+        getPolygons(2)
+    ]
+    mapping_template = [
+        [18, 20, 1, 5],
+        [19, 17, 16, 15, 9, 11, 3, 2, 7, 10, 8],
+        [6, 11, 4, 9, 1, 5, 13, 14, 18, 12, 20]
+    ]
+    aux_image = [
+        cv2.cvtColor(cv2.imread('auxiliary_images/template0_task3.jpg'), cv2.COLOR_BGR2GRAY),
+        cv2.cvtColor(cv2.imread('auxiliary_images/template1_task3.jpg'), cv2.COLOR_BGR2GRAY),
+        cv2.cvtColor(cv2.imread('auxiliary_images/template2_task3.jpg'), cv2.COLOR_BGR2GRAY)
+    ]
+
+    return polygons, mapping_template, aux_image
+
+
+def getSimilarity(image1, image2):
+    """
+    Get similarity score between 2 images.
+
+    :param image1: the first image
+    :param image2: the second image
+    :return: similarity score between images
+    """
+    score = cv2.matchTemplate(image1, image2, cv2.TM_SQDIFF_NORMED)
+    min_val, _, _, _ = cv2.minMaxLoc(score)
+    return min_val
+
+
 def getPointScore(polygons, x, y, mapping_template):
     """
     Given a point's coordinates and the list of polygons, calculate the score at the given position.
@@ -58,66 +97,39 @@ def getPointScore(polygons, x, y, mapping_template):
     return '0'
 
 
-def processVideo(first_image, last_image, video_name, polygons, mapping_template):
+def processVideo(first_image, last_image, case, video_name, polygons, mapping_template):
     """
     Process the given image, identify the darts on the board and write the solution.
 
     :param first_image: the first frame of the video, used as a mask
     :param last_image: the last frame of the video, containing the dartboard with the last thrown dart
+    :param case: one of the 3 possible cases for the position of the board in a video
     :param video_name: video identifier, used for writing the output file
     :param polygons: the list of concentric discs and regions used for score calculation
     :param mapping_template: mapping between each polygon and the score inside it
     :return: None
     """
-    # TODO!
     diff = cv2.absdiff(first_image, last_image)
-    mask = toHSV(diff)
-    darts = countDarts(mask, 12)
 
-    writeSolution('evaluation/Task3/' + video_name + '_predicted.txt', darts, getPointScore, polygons, mapping_template)
+    if case == 0:
+        diff = diff[:, :600]
 
+    diff = cv2.inRange(diff, np.array([20, 20, 30]), np.array([200, 200, 200]))
+    darts = countDarts(diff, 5, 50, 20, 50)[-1]
 
-def setData():
-    """
-    Set preliminary data as lists dependent on the video case.
-
-    :return: The list of polygons, mappings between polygons and scores and template images for case identification
-    """
-    polygons = [
-        getPolygons(0),
-        getPolygons(1),
-        getPolygons(2)
-    ]
-    mapping_template = [
-        [18, 20, 1, 5],
-        [19, 17, 16, 15, 9, 11, 3, 2, 7, 10, 8],
-        [6, 11, 4, 9, 1, 5, 13, 14, 18, 12, 20]
-    ]
-    aux_image = [
-        cv2.cvtColor(cv2.imread('auxiliary_images/template0_task3.jpg'), cv2.COLOR_BGR2GRAY),
-        cv2.cvtColor(cv2.imread('auxiliary_images/template1_task3.jpg'), cv2.COLOR_BGR2GRAY),
-        cv2.cvtColor(cv2.imread('auxiliary_images/template2_task3.jpg'), cv2.COLOR_BGR2GRAY)
-    ]
-
-    return polygons, mapping_template, aux_image
-
-
-def getSimilarity(image1, image2):
-    """
-    Get similarity score between 2 images
-
-    :param image1: the first image
-    :param image2: the second image
-    :return: similarity score between images
-    """
-    score = cv2.matchTemplate(image1, image2, cv2.TM_SQDIFF_NORMED)
-    min_val, _, _, _ = cv2.minMaxLoc(score)
-    return min_val
+    writeSolution(
+        'evaluation/Task3/' + video_name + '_predicted.txt',
+        [(darts[0][1], darts[1][0])],
+        getPointScore,
+        polygons,
+        mapping_template,
+        False
+    )
 
 
 def task3(path):
     """
-    Get preliminary data and apply algorithm on all videos.
+    Get preliminary data and apply algorithm on the first and last frame of all videos.
 
     :param path: the path where to find the train / test data
     :return: None
@@ -133,9 +145,10 @@ def task3(path):
         vidcap = cv2.VideoCapture(path + video_name + '.mp4')
 
         success, first_image = vidcap.read()
-        last_image = first_image
+        last_image = aux_image = first_image
         while success:
-            success, last_image = vidcap.read()
+            last_image = aux_image
+            success, aux_image = vidcap.read()
 
         gray = cv2.cvtColor(first_image, cv2.COLOR_BGR2GRAY)
         case = (0, getSimilarity(gray, aux_images[0]))
@@ -144,4 +157,4 @@ def task3(path):
             if score < case[1]:
                 case = (j, score)
 
-        # processVideo(first_image, last_image, video_name, polygons[case[0]], mapping_templates[case[0]])
+        processVideo(first_image, last_image, case[0], video_name, polygons[case[0]], mapping_templates[case[0]])

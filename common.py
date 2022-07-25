@@ -143,7 +143,7 @@ def getDartsAreas(best_squares):
     return best_best_squares
 
 
-def countDarts(mask, score_th):
+def countDarts(mask, score_th, start=250, step=50, size=100):
     """
     Find the flags for all darts on board. In order to do this, use a sliding window that finds the squares with the
     percentage of relevant information smaller than the threshold, add them to a list and reduce the list by joining the
@@ -151,13 +151,14 @@ def countDarts(mask, score_th):
 
     :param mask: mask applied on the original image that contains relevant information
     :param score_th: maximum score threshold
+    :param start: start position in the image
+    :param size: size of the sliding window
+    :param step: distance between windows starting point
     :return: list of flag positions
     """
     best_squares = []
-    size = 100
-    step = 50
-    for y in range(250, mask.shape[0] - size, step):
-        for x in range(250, mask.shape[1] - size, step):
+    for y in range(start, mask.shape[0] - size, step):
+        for x in range(start, mask.shape[1] - size, step):
             window = mask[y:y + size, x:x + size]
             white = np.count_nonzero(window)
             score = 100000 if white == 0 else size * size / white
@@ -201,7 +202,7 @@ def getBestSimilarity(template_path, path):
     return diff
 
 
-def writeSolution(path, darts, getPointScore, polygons, mapping_template=None):
+def writeSolution(path, darts, getPointScore, polygons, mapping_template, add_length=True):
     """
     Get solution and write it in an output file.
 
@@ -209,21 +210,17 @@ def writeSolution(path, darts, getPointScore, polygons, mapping_template=None):
     :param darts: list of dart flag positions
     :param getPointScore: function used to calculate the score at a given position - different for each task
     :param polygons: list of polygons with relevant information
-    :param mapping_template: mapping between each polygon and the score inside it. None for task 1
+    :param mapping_template: mapping between each polygon and the score inside it
+    :param add_length: if we need to add the number of darts to the output file
     :return: None
     """
     f = open(path, 'w')
-    f.write(str(len(darts)))
+    if add_length:
+        f.write(str(len(darts)) + '\n')
 
     for dart in darts:
-        x = int(dart[0][0] - 300)
-        y = int(dart[0][1] + (dart[1][1] - dart[0][1]) / 2)
-
-        if mapping_template is None:
-            score = getPointScore(polygons, x, y)
-        else:
-            score = getPointScore(polygons, x, y, mapping_template)
-
-        f.write('\n' + str(score))
+        x, y = dart[0], dart[1]
+        score = getPointScore(polygons, x, y, mapping_template)
+        f.write(str(score) + '\n')
 
     f.close()
