@@ -1,14 +1,12 @@
 # Darts
-Automatic darts scoring system - Computer Vision Project 3
+Automatic darts scoring system
 
-1. The libraries required to run the project including the full version of each library:
-
+### The libraries required to run the project including the full version of each library:
 - numpy==1.21.0
 - cv2==4.4.0
 - shapely==1.8.2
 
----
-2. How to run each task and where to look for the output file:
+### How to run each task and where to look for the output file:
 
 Prerequisites:
 - in the code folder there must be a folder 'evaluation' with 3 subfolders: 'Task1', 'Task2' and 'Task3'

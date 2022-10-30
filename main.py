@@ -57,12 +57,12 @@ def main(path):
     :param path: the path where to find the train / test data
     :return: None
     """
-    # task1(path + '/Task1/')
+    task1(path + '/Task1/')
     # checkScore('evaluation/Task1')
-    # task2(path + '/Task2/')
+    task2(path + '/Task2/')
     # checkScore('evaluation/Task2')
     task3(path + '/Task3/')
-    checkScore('evaluation/Task3', False)
+    # checkScore('evaluation/Task3', False)
 
 
-main('train')
+main('test')

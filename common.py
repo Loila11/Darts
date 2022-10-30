@@ -56,16 +56,6 @@ def getEllipses(path, th_low, th_up):
     cnts, hier = cv2.findContours(gray, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     cnts = [polygon for polygon in cnts if th_low < len(polygon) < th_up]
 
-    # Draw found contours in input image
-    # print(len(cnts))
-    # for i in range(len(cnts)):
-    #     print(len(cnts[i]))
-    #     out_image = cv2.drawContours(image, cnts[i], -1, (0, 0, 255), 10)
-    #     # out_image = cv2.resize(out_image, dsize=(0, 0), fx=0.2, fy=0.2)
-    #     plt.imshow(out_image)
-    #     plt.pause(0.1)
-    #     display.clear_output(wait=True)
-
     polygons = [Polygon([(point[0], point[1]) for [point] in polygon]) for polygon in cnts]
     return polygons
 
@@ -107,9 +97,6 @@ def toHSV(image):
 
     # green mask
     mask = cv2.inRange(diff, np.array([70, 50, 70]), np.array([128, 255, 255]))
-
-    # gray mask
-    # mask = cv2.inRange(image, np.array([98, 94, 90]), np.array([188, 184, 183]))
 
     return mask
 
